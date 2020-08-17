@@ -25,15 +25,12 @@ gulp.task('clean', function () {
   return del(libPath + '/**/*', { force: true });
 });
 
-gulp.task('copy:libs', function (done) {
-    sequence('clean', 'copy:vendor', 'copy:rxjs', 'copy:angular', done);
-});
+
 
 gulp.task('copy:vendor', function() {
   return gulp.src([
       nodeModulesPath + '/core-js/client/**/*',
       nodeModulesPath + '/zone.js/dist/zone.js',
-      nodeModulesPath + '/systemjs/dist/system-polyfills.js',
       nodeModulesPath + '/systemjs/dist/system.src.js',
       nodeModulesPath + '/systemjs/dist/system.src.js.map',
       nodeModulesPath + '/tslib/tslib.js'
@@ -52,6 +49,8 @@ gulp.task('copy:angular', function() {
     return gulp.src([nodeModulesPath + '/@angular/**/*']).pipe(gulp.dest(libPath + '/@angular'));
 });
 
+
+
 gulp.task('compressScripts', function() {
     gulp.src([
         jsPath + '/**/*.js'
@@ -60,6 +59,9 @@ gulp.task('compressScripts', function() {
         .pipe(uglify())
         .pipe(gulp.dest(jsDist));
 });
+
+gulp.task('copy:libs', gulp.series('clean', 'copy:vendor', 'copy:rxjs', 'copy:angular'));
+
 
 gulp.task('watch', function() {
 
@@ -71,5 +73,5 @@ gulp.task('watch', function() {
 
 });
 
-gulp.task('default', ['sass', 'compressScripts', 'watch']);
+gulp.task('default', gulp.series(['sass', 'compressScripts', 'watch']));
 
